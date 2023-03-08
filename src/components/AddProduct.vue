@@ -12,16 +12,16 @@
         <form class="form" @submit.prevent="addingProduct">
         <h1>Add Product</h1>
         <label class="label">Product Name</label>
-        <input type="text" v-model="prodName">
+        <input type="text" v-model="payload.prodName">
         <label class="label">Price</label>
-        <input type="number" v-model="price">
+        <input type="number" v-model="payload.price">
         <label class="label">Category</label>
-        <input type="text" v-model="category">
+        <input type="text" v-model="payload.category">
         <label class="number">Quantity</label>
-        <input type="text" v-model="prodQuantity">
+        <input type="text" v-model="payload.prodQuantity">
         <label class="label">Image</label>
-        <input type="text" v-model="imgURL">
-        <button class="btn btn-success mt-3" type="submit">Add</button>
+        <input type="text" v-model="payload.imgURL">
+        <button class="btn btn-success mt-3" type="submit" v-on:click="addingProduct">Add</button>
       </form>
       </div>
       <div class="modal-footer">
@@ -34,6 +34,8 @@
     </div>
 </template>
 <script>
+import { useStore } from 'vuex';
+import {computed} from '@vue/runtime-core'
     export default {
       data(){
         return {
@@ -44,18 +46,44 @@
             imgURL: null
         }
       },
-      methods: {
-        addingProduct() {
-          console.log(this.prodName);
-           this.$store.dispatch('addProduct', {
-            prodName:  this.prodName,
-            price: this.price,
-            category:  this.category,
-            prodQuantity: this.prodQuantity, 
-            imgURL: this.imgURL
-          })
+      setup(){
+        let store = useStore();
+
+        let payload = {
+          prodName:'',
+          price:'',
+          category:'',
+          prodQuantity:'',
+          imgURL:''
         }
-      }
+
+        let  addingProduct = () => {
+          console.log(payload);
+          store.dispatch('addProduct', payload);
+          store.dispatch('fetchProducts');
+          location.reload();
+        }
+
+        let products = computed(() => store.state.products)
+
+        return{
+          payload,
+          addingProduct,
+          products
+        }
+      },
+      // methods: {
+      //   addingProduct() {
+      //     console.log(this.prodName);
+      //      this.$store.dispatch('addProduct', {
+      //       prodName:  this.prodName,
+      //       price: this.price,
+      //       category:  this.category,
+      //       prodQuantity: this.prodQuantity, 
+      //       imgURL: this.imgURL
+      //     })
+      //   }
+      // }
     }
 </script>
 <style scoped>
